@@ -1,11 +1,11 @@
 plugins {
-    id 'fabric-loom' version '1.6-SNAPSHOT'
+    id 'net.fabricmc.fabric-loom' version "${loom_version}"
     id 'maven-publish'
 }
 
 version = project.mod_version
 group = project.maven_group
-def targetJavaVersion = 17
+def targetJavaVersion = 25
 
 
 repositories {
@@ -19,51 +19,61 @@ repositories {
 dependencies {
     // To change the versions see the gradle.properties file
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
-    mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
-    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+    implementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
-    // Fabric API. This is technically optional, but you probably want it anyway.
-    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+    implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+}
+
+fabricApi {
+    configureTests {
+        createSourceSet = true
+        modId = "transferable_pets_tests"
+        enableClientGameTests = false
+    }
 }
 
 processResources {
-    inputs.property "version", project.version
-    inputs.property "minecraft_version", project.minecraft_version
-    inputs.property "loader_version", project.loader_version
-    filteringCharset "UTF-8"
+    def metadata = [
+            mod_name: project.mod_name,
+            mod_id: project.mod_id,
+            mod_version: project.version,
+            mod_description: project.mod_description,
+            repository: project.repository,
+            license: project.license,
+            mod_icon: project.mod_icon,
+            environment: project.environment,
+            minecraft_version: project.minecraft_version,
+            loader_version: project.loader_version,
+            fabric_version: project.fabric_version,
+            java_version: targetJavaVersion
+    ]
+    inputs.properties metadata
+    filteringCharset = "UTF-8"
 
     filesMatching("fabric.mod.json") {
-        expand "mod_name": project.mod_name,
-                "mod_id": project.mod_id,
-                "mod_version": project.version,
-                "mod_description": project.mod_description,
-                "repository": project.repository,
-                "license": project.license,
-                "mod_icon": project.mod_icon,
-                "environment": project.environment
+        expand metadata
     }
 }
 
 tasks.withType(JavaCompile).configureEach {
     it.options.encoding = "UTF-8"
-    if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible()) {
-        it.options.release = targetJavaVersion
-    }
+    it.options.release = targetJavaVersion
 }
 
 java {
-    def javaVersion = JavaVersion.toVersion(targetJavaVersion)
-    if (JavaVersion.current() < javaVersion) {
-        toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
-    }
-    archivesBaseName = project.mod_id + project.generated_file_name_addon
-    // Uncomment this line to generate a de-obfuscated jar
-    // withSourcesJar()
+    toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
+    withSourcesJar()
+}
+
+base {
+    archivesName = project.mod_id + project.generated_file_name_addon
 }
 
 jar {
+    def modId = project.mod_id
+    inputs.property "modId", modId
     from("LICENSE") {
-        rename { "${it}_${project.archivesBaseName}" }
+        rename { "${it}_${modId}" }
     }
 }
 

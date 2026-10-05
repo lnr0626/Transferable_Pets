@@ -5,7 +5,11 @@
   "version": "${mod_version}",
   "description": "${mod_description}",
   "authors": ["WinterWolfSV"],
-  "contact": {"repo": "${repository}"},
+  "contact": {
+    "sources": "${repository}",
+    "issues": "${repository}/issues",
+    "homepage": "https://modrinth.com/mod/transferable-pets"
+  },
   "license": "${license}",
   "icon": "${mod_icon}",
   "environment": "${environment}",
@@ -13,8 +17,9 @@
 	"transferable_pets.mixins.json"
   ],
   "depends": {
-	"fabricloader": "*",
-	"fabric": "*",
-	"minecraft": ">=1.21"
+	"fabricloader": ">=${loader_version}",
+	"fabric-api": ">=${fabric_version}",
+	"minecraft": "${minecraft_version}",
+	"java": ">=${java_version}"
   }
 }

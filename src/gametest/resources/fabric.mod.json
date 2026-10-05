@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "id": "transferable_pets_tests",
+  "version": "1.0.0",
+  "name": "Transferable Pets Game Tests",
+  "environment": "server",
+  "license": "CC-BY-NC-4.0",
+  "entrypoints": {
+    "fabric-gametest": [
+      "winterwolfsv.transferable_pets.PetTransferTests"
+    ]
+  }
+}
